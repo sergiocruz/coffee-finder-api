@@ -1,4 +1,2 @@
-coffee-finder-api
-=================
-
-coffee-finder-api
+# coffee-finder-api
+### a Sails application
