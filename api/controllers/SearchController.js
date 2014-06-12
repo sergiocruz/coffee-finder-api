@@ -16,16 +16,12 @@
  */
 
 
-var V1Controller = {
+var SearchController = {
 
-  index: function(req, res) {
-
-    // Standarized response object
-    var response = {
-      data: null
-    };
-
-    // console.log(req.query);
+  /**
+   * Index controller for our v1 api
+   */
+  index: function searchIndex(req, res) {
 
     var term = req.query.term || '',
         lat = req.query.lat || '',
@@ -38,13 +34,12 @@ var V1Controller = {
     }
 
     YelpService.search(term, lat, lon, radius)
-      .then(function(response) {
+      .then(function searchIndexResponse(response) {
         res.json(response);
       });
 
   }
-
   
 };
 
-module.exports = V1Controller;
+module.exports = SearchController;
