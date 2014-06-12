@@ -23,6 +23,8 @@ var SearchController = {
    */
   index: function searchIndex(req, res) {
 
+    res.set('Access-Control-Allow-Origin', '*');
+
     var term = req.query.term || '',
         lat = req.query.lat || '',
         lon = req.query.lon || '',
