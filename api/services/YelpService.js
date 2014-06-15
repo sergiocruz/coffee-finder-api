@@ -1,8 +1,6 @@
 
 // Dependencies
-var request = require('request'),
-    qs = require('querystring'),
-    Q = require('q');
+var Q = require('q');
 
 /**
  * Yelp service module
@@ -18,31 +16,64 @@ var YelpService = {
    * @param  {Decimal} lon  Longitude
    * @return {Object}       Promise object
    */
-  search: function(term, lat, lon, radius) {
+  search: function(term, lat, lon, radius, limit) {
 
     // Vars
-    var deferred, params, url;
+    var deferred, params, url, ll;
 
     // Using Q to promisify this method
     deferred = Q.defer();
 
+    // YELP package
+    var cfg = sails.config.apiServices.yelp;
+    var yelp = require('yelp').createClient({
+      consumer_key: cfg.consumer_key,
+      consumer_secret: cfg.consumer_secret,
+      token: cfg.token,
+      token_secret: cfg.token_secret,
+    });
+
+
+    // Formatting lat and long
+    lat = parseFloat(lat).toPrecision(6);
+    lon = parseFloat(lon).toPrecision(6);
+
+    // Formatting to pass as a url param
+    ll = lat + "," + lon;
+
     // URL Params
     params = {
-      'ywsid': sails.config.apiServices.yelp.ywsid,
-      'term': term,
-      'lat': lat,
-      'long': lon,
-      'radius': radius
+      'term': 'coffee',
+      'll': ll,
     };
 
-    // API url and params
-    url = 'http://api.yelp.com/business_review_search/?'
-      + qs.stringify(params);
+    if (limit) {
+      params.limit = limit;
+    }
 
-    /**
-     * Executes YELP request
-     */
-    request.get({url: url, json: true}, requestCallback);
+    // See http://www.yelp.com/developers/documentation/v2/search_api
+    yelp.search(params, requestCallback);
+
+    // // URL Params
+    // params = {
+    //   'ywsid': sails.config.apiServices.yelp.ywsid,
+    //   'term': term,
+    //   'lat': lat,
+    //   'long': lon,
+    //   'radius': radius
+    // };
+
+    // // API url and params
+    // url = 'http://api.yelp.com/business_review_search/?' +
+    //     qs.stringify(params);
+
+    // /**
+    //  * Executes YELP request
+    //  */
+    // request.get({url: url, json: true}, requestCallback);
+
+    // console.log(url);
+    // console.log('start', Date.now());
 
     /**
      * Request callback, resolves or rejects promise
@@ -51,7 +82,7 @@ var YelpService = {
      * @param  {Object} body     JSON Object of response
      * @return {Object}          Q.deferred reject() or resolve()
      */
-    function requestCallback(error, response, body) {
+    function requestCallback(error, body) {
 
       // Makes sure there are no errors
       if (error) {
