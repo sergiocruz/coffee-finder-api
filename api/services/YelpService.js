@@ -113,14 +113,18 @@ var YelpService = {
       // Model
       model = V1Response.getBusinessModel();
       model.name = yelpBusiness.name;
-      model.address = yelpBusiness.address1;
-      model.city = yelpBusiness.city;
-      model.state = yelpBusiness.state;
+      model.address = yelpBusiness.location.display_address[0];
+      model.city = yelpBusiness.location.city;
+      model.state = yelpBusiness.location.state_code;
       model.phone = yelpBusiness.phone;
-      model.zip = yelpBusiness.zip;
+      model.zip = yelpBusiness.location.postal_code;
+
+      console.log(model);
+      console.log(yelpBusiness);
+      data.push(model);
 
       // Adds model to response data
-      data.push(model);
+      // data.push(model);
     }
 
     // Sets data
