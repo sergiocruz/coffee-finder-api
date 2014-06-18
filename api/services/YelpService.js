@@ -86,7 +86,7 @@ var YelpService = {
 
       // Makes sure there are no errors
       if (error) {
-        return deferred.reject();
+        return deferred.reject(error, body);
       }
 
       // Resolves promise

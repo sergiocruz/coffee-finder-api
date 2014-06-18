@@ -20,6 +20,8 @@
       as you would normally: using <link/> tags.
       
     -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap-theme.min.css">
 
     <!--
 
@@ -37,8 +39,10 @@
 
   <body>
 
-    <!-- Include the view file for the current controller/route -->
-    <%- body %>
+    <div class="container" style="margin-top: 20px">
+      <!-- Include the view file for the current controller/route -->
+      <%- body %>
+    </div>
 
 
     <!--
@@ -57,6 +61,9 @@
     <script type="text/javascript" src="/js/sails.io.js"></script>
     <!-- listen on socket.io for incoming messages -->
     <script type="text/javascript" src="/js/app.js"></script>
+
+    <script src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 
     <!-- Your scripts here? -->
     <!-- Your scripts here? -->

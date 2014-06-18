@@ -16,12 +16,21 @@ module.exports.adapters = {
 
   // If you leave the adapter config unspecified 
   // in a model definition, 'default' will be used.
-  'default': 'disk',
+  'default': 'mongo',
 
   // Persistent adapter for DEVELOPMENT ONLY
   // (data is preserved when the server shuts down)
   disk: {
     module: 'sails-disk'
+  },
+
+  mongo: {
+    module: 'sails-mongo',
+    host: '127.0.0.1',
+    port: 27017,
+    // user: 'sails',
+    // password: 'sails',
+    database: 'coffeefinder'
   },
 
   // MySQL is the world's most popular relational database.
@@ -33,7 +42,7 @@ module.exports.adapters = {
     user: 'YOUR_MYSQL_USER',
     // Psst.. You can put your password in config/local.js instead
     // so you don't inadvertently push it up if you're using version control
-    password: 'YOUR_MYSQL_PASSWORD', 
+    password: 'YOUR_MYSQL_PASSWORD',
     database: 'YOUR_MYSQL_DB'
   }
 };

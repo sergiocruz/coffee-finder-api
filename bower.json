@@ -1,0 +1,22 @@
+{
+  "name": "coffee-finder-api",
+  "version": "0.0.1",
+  "homepage": "https://github.com/sergiocruz/coffee-finder-api",
+  "authors": [
+    "Sergio Cruz <sergio@givted.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "1.11",
+    "bootstrap": "~3.1.1",
+    "angular": "~1.2.18",
+    "angular-resource": "~1.2.18"
+  }
+}
