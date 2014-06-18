@@ -119,8 +119,8 @@ var YelpService = {
       model.phone = yelpBusiness.phone;
       model.zip = yelpBusiness.location.postal_code;
 
-      console.log(model);
-      console.log(yelpBusiness);
+      // console.log(model);
+      // console.log(yelpBusiness);
       data.push(model);
 
       // Adds model to response data

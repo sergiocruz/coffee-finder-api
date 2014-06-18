@@ -12,12 +12,11 @@ app.controller('MainCtrl', ['$scope', 'LogsResource', function MainCtrl($scope, 
   $scope.logs = [];
 
   function logsResourceLoad(logs) {
-    console.log(logs);
     $scope.logs = logs;
   }
 
   function logsResourceError() {
-    console.log('error', arguments);
+    
   }
 
   LogsResource
