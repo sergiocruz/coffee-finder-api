@@ -6,7 +6,7 @@
           <th>Date</th>
           <th>Lat</th>
           <th>Lon</th>
-          <th># Results</th>
+          <th>Size</th>
           <th>Name</th>
           <th>Address</th>
         </tr>
@@ -14,9 +14,9 @@
       <tbody>
         <tr ng-repeat="log in logs">
           <td ng-bind="log.createdAt | date: 'medium'"></td>
-          <td ng-bind="log.request.lat | toPrecision:6"></td>
-          <td ng-bind="log.request.lon | toPrecision:6"></td>
-          <td ng-bind="log.response.data.length"></td>
+          <td ng-bind="log.request.lat | toPrecision:8"></td>
+          <td ng-bind="log.request.lon | toPrecision:8"></td>
+          <td ng-bind="(log.response.data[0].name.length + log.response.data[0].address.length + log.response.data[0].city.length + 2) + ' bytes'"></td>
           <td ng-bind="log.response.data[0].name"></td>
           <td ng-bind="log.response.data[0].address"></td>
         </tr>
