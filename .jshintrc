@@ -21,6 +21,11 @@
   "globals": {
     "angular": false,
     "$": false,
-    "jQuery": false
+    "jQuery": false,
+    "sails": false,
+    "YelpService": false,
+    "V1Response": false,
+    "Log": false,
+    "User": false
   }
 }

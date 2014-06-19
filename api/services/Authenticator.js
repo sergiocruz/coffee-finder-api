@@ -1,11 +1,15 @@
-var bcrypt = require('bcrypt'),
-    Q = require('q');
+'use strict';
 
 /**
  * Authenticator module
- * @type {Object}
+ * @return {Object}
  */
-var Authenticator = {
+var Authenticator = (function AuthenticatorModule() {
+
+  // Dependencies & declarations
+  var bcrypt = require('bcrypt'),
+      Q = require('q'),
+      module = {};
 
   /**
    * Login method
@@ -13,7 +17,10 @@ var Authenticator = {
    * @param  {String} password
    * @return {Object} Q Promise
    */
-  login: function login(username, password) {
+  module.login = function login(username, password) {
+
+    // Declarations
+    var deferred;
 
     // Using Q to promisify this method
     deferred = Q.defer();
@@ -46,8 +53,16 @@ var Authenticator = {
       });
     });
 
+    // Return Q promise
     return deferred.promise;
-  }
-};
+
+  }; // end of module.login()
+
+  /**
+   * Returns public module
+   */
+  return module;
+
+})();
 
 module.exports = Authenticator;

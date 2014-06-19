@@ -1,12 +1,67 @@
-
-// Dependencies
-var Q = require('q');
+'use strict';
+/* jshint camelcase: false */
 
 /**
  * Yelp service module
  * @type {Object}
  */
-var YelpService = {
+var YelpService = (function() {
+
+  // Module Dependencies
+  var Q = require('q');
+
+  /**
+   * Response transformer, this private function leverages our response model
+   * as an effort to consolidate all our responses regardless of API vendors.
+   * 
+   * @param  {Object} yelpResponse  Response object returned by yelp
+   * @return {Array}                Array of V1Response.businessModels()
+   */
+  function transformResponse(yelpResponse) {
+
+    var data = [],
+        i = 0,
+        responseObject,
+        yelpBusiness,
+        BusinessModel,
+        model;
+
+    // BusinessModel class
+    BusinessModel = V1Response.getBusinessModel();
+
+    // Response object
+    responseObject = V1Response.getResponse();
+
+    for (i in yelpResponse.businesses) {
+
+      // Yelp business object
+      yelpBusiness = yelpResponse.businesses[i];
+
+      // New BusinessModel instance
+      model = new BusinessModel();
+      model.name    = yelpBusiness.name;
+      model.address = yelpBusiness.location.display_address[0];
+      model.city    = yelpBusiness.location.city;
+      model.state   = yelpBusiness.location.state_code;
+      model.phone   = yelpBusiness.phone;
+      model.zip     = yelpBusiness.location.postal_code;
+
+      // Adds model to response data
+      data.push(model);
+    }
+
+    // Sets data
+    responseObject.data = data;
+
+    // Returns response object
+    return responseObject;
+  }
+
+  /**
+   * Public module object that will be exported
+   * @type {Object}
+   */
+  var module = {};
 
   /**
    * Searches venue by geographical location
@@ -16,30 +71,30 @@ var YelpService = {
    * @param  {Decimal} lon  Longitude
    * @return {Object}       Promise object
    */
-  search: function(term, lat, lon, radius, limit) {
+  module.search = function yelpSearch(term, lat, lon, radius, limit) {
 
-    // Vars
-    var deferred, params, url, ll;
+    // Variable declarations
+    var deferred, params, ll, cfg, yelp;
 
-    // Using Q to promisify this method
-    deferred = Q.defer();
-
-    // YELP package
-    var cfg = sails.config.apiServices.yelp;
-    var yelp = require('yelp').createClient({
+    /**
+     * Config & YELP package:
+     * Both vars to be defined here because sails is only in this context
+     */
+    cfg = sails.config.apiServices.yelp;
+    yelp = require('yelp').createClient({
       consumer_key: cfg.consumer_key,
       consumer_secret: cfg.consumer_secret,
       token: cfg.token,
       token_secret: cfg.token_secret,
     });
 
+    // Using Q to promisify this method
+    deferred = Q.defer();
 
     // Formatting lat and long
     lat = parseFloat(lat).toPrecision(6);
     lon = parseFloat(lon).toPrecision(6);
-
-    // Formatting to pass as a url param
-    ll = lat + "," + lon;
+    ll  = lat + ',' + lon;
 
     // URL Params
     params = {
@@ -50,30 +105,6 @@ var YelpService = {
     if (limit) {
       params.limit = limit;
     }
-
-    // See http://www.yelp.com/developers/documentation/v2/search_api
-    yelp.search(params, requestCallback);
-
-    // // URL Params
-    // params = {
-    //   'ywsid': sails.config.apiServices.yelp.ywsid,
-    //   'term': term,
-    //   'lat': lat,
-    //   'long': lon,
-    //   'radius': radius
-    // };
-
-    // // API url and params
-    // url = 'http://api.yelp.com/business_review_search/?' +
-    //     qs.stringify(params);
-
-    // /**
-    //  * Executes YELP request
-    //  */
-    // request.get({url: url, json: true}, requestCallback);
-
-    // console.log(url);
-    // console.log('start', Date.now());
 
     /**
      * Request callback, resolves or rejects promise
@@ -90,50 +121,23 @@ var YelpService = {
       }
 
       // Resolves promise
-      deferred.resolve(YelpService.transformResponse(body));
+      deferred.resolve(transformResponse(body));
     }
+
+    // See http://www.yelp.com/developers/documentation/v2/search_api
+    yelp.search(params, requestCallback);
 
     // Returns "Q" promise
     return deferred.promise;
-  },
+  };
 
-  transformResponse: function(yelpResponse) {
+  /**
+   * Exports public module object
+   */
+  return module;
 
-    var responseObject, i, yelpBusiness, data = [];
+})();
 
-    // Response object
-    var responseObject = V1Response.getResponse();
-
-    for (i in yelpResponse.businesses) {
-
-      // Yelp business object
-      yelpBusiness = yelpResponse.businesses[i];
-
-
-      // Model
-      model = V1Response.getBusinessModel();
-      model.name = yelpBusiness.name;
-      model.address = yelpBusiness.location.display_address[0];
-      model.city = yelpBusiness.location.city;
-      model.state = yelpBusiness.location.state_code;
-      model.phone = yelpBusiness.phone;
-      model.zip = yelpBusiness.location.postal_code;
-
-      // console.log(model);
-      // console.log(yelpBusiness);
-      data.push(model);
-
-      // Adds model to response data
-      // data.push(model);
-    }
-
-    // Sets data
-    responseObject.data = data;
-
-    // Returns response object
-    return responseObject;
-  }
-};
 
 // Finally exports Yelp service
 module.exports = YelpService;

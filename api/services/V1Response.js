@@ -1,10 +1,32 @@
+'use strict';
+
 /**
  * V1 Response Module
  * 
  * Just a simple way of consolidating our API regardless of third-party
  * service being used, used in the v1 of our application Restful API.
+ *
+ * @return {Object} Public V1Response module
  */
-var V1Response = {
+var V1Response = (function V1ResponseModule() {
+
+  /**
+   * Busines model private class
+   */
+  function BusinessModel() {
+    this.name = '';
+    this.address = '';
+    this.city = '';
+    this.state = '';
+    this.phone = '';
+    this.zip = '';
+  }
+
+  /**
+   * Public module
+   * @type {Object}
+   */
+  var module = {};
 
   /**
    * getResponse()
@@ -14,11 +36,11 @@ var V1Response = {
    * 
    * @return {Object} Response object
    */
-  getResponse: function getResponse() {
+  module.getResponse = function getResponse() {
     return {
       data: []
-    }
-  },
+    };
+  };
 
   /**
    * getBusinessModel()
@@ -34,17 +56,15 @@ var V1Response = {
    * 
    * @return {Object} Model for business location
    */
-  getBusinessModel: function getBusinessModel() {
-    return {
-      name: '',
-      address: '',
-      city: '',
-      state: '',
-      phone: '',
-      zip: ''
-    }
-  }
-};
+  module.getBusinessModel = function getBusinessModel() {
+    return BusinessModel;
+  };
+
+  /**
+   * Returns public object
+   */
+  return module;
+})();
 
 // Exports module
 module.exports = V1Response;
