@@ -5,28 +5,88 @@
 // *
 // * Description
 // */
-var app = angular.module('pebbleLogsApp', ['ngResource']);
+var app = angular.module('pebbleLogsApp', ['ngResource', 'ngReactGrid']);
 
-app.controller('MainCtrl', ['$scope', 'LogsResource', function MainCtrl($scope, LogsResource) {
+app.controller('MainCtrl', [
+  '$scope',
+  '$filter',
+  'LogsResource',
+  'ngReactGrid',
+  function MainCtrl($scope, $filter, LogsResource, ngReactGrid) {
 
-  $scope.logs = [];
+    $scope.logs = [];
 
-  function logsResourceLoad(logs) {
-    $scope.logs = logs;
+    function fetchLogsOnLoad(logs) {
+      $scope.logs = logs;
+
+      var formattedLogs = [];
+      angular.forEach(logs, function(log) {
+
+        // Model
+        var model = {};
+        model.date = $filter('date')(log.createdAt, 'medium');
+        model.lat  = $filter('toPrecision')(log.request.lat, 8);
+        model.lon  = $filter('toPrecision')(log.request.lon, 8);
+        model.size = (log.response.data[0].name.length + log.response.data[0].address.length + log.response.data[0].city.length + 2) + ' bytes';
+        model.name = log.response.data[0].name;
+        model.addr = log.response.data[0].address;
+
+        // Model
+        formattedLogs.push(model);
+      });
+
+      // Sets list of models to grid
+      $scope.grid.data = formattedLogs;
+
+    }
+
+    function fetchLogsError() {}
+
+    function fetchLogs() {
+      LogsResource
+        .query()
+          .$promise
+            .then(fetchLogsOnLoad)
+            .catch(fetchLogsError);
+    }
+
+    $scope.grid = {
+      data: [],
+      columnDefs: [
+        {
+          field: 'date',
+          displayName: 'Date'
+        },
+        {
+          field: 'lat',
+          displayName: 'Lat'
+        },
+        {
+          field: 'lon',
+          displayName: 'Lon'
+        },
+        {
+          field: 'size',
+          displayName: 'Size'
+        },
+        {
+          field: 'name',
+          displayName: 'Name'
+        },
+        {
+          field: 'addr',
+          displayName: 'Address'
+        }
+      ],
+      localMode: false,
+      getData: function() {
+        fetchLogs();
+      }
+    };
+
   }
+]);
 
-  function logsResourceError() {
-    
-  }
-
-  LogsResource
-    .query()
-      .$promise
-        .then(logsResourceLoad)
-        .catch(logsResourceError);
-
-  
-}]);
 
 app.provider('LogsResource', function LogsResource() {
     this.$get = ['$resource', function($resource) {

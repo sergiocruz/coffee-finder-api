@@ -1,31 +1,12 @@
 <div ng-app="pebbleLogsApp" ng-controller="MainCtrl">
-  <div class="table-responsive">
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Lat</th>
-          <th>Lon</th>
-          <th>Size</th>
-          <th>Name</th>
-          <th>Address</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr ng-repeat="log in logs">
-          <td ng-bind="log.createdAt | date: 'medium'"></td>
-          <td ng-bind="log.request.lat | toPrecision:8"></td>
-          <td ng-bind="log.request.lon | toPrecision:8"></td>
-          <td ng-bind="(log.response.data[0].name.length + log.response.data[0].address.length + log.response.data[0].city.length + 2) + ' bytes'"></td>
-          <td ng-bind="log.response.data[0].name"></td>
-          <td ng-bind="log.response.data[0].address"></td>
-        </tr>
-      </tbody>
-    </table><!-- /.table -->
-  </div><!-- /.table-responsive -->
+
+  <ng-react-grid grid="grid"></ng-react-grid>
+
 </div>
 
 <!-- Scripts -->
 <script src="/bower_components/angular/angular.js"></script>
 <script src="/bower_components/angular-resource/angular-resource.min.js"></script>
+<script src="/bower_components/react/react.min.js"></script>
+<script src="/js/vendor/ngReactGrid/js/ngReactGrid-0.5.0.min.js"></script>
 <script src="/js/logs/app.js"></script>
