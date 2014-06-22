@@ -25,11 +25,53 @@ var LogsController = {
 
   api: function(req, res) {
 
-    Log
-      .find()
-      .sort({createdAt: 'desc'})
-      .done(function(err, logs) {
-        res.json(logs);
+    var response = {};
+
+    var logs = Log.find();
+
+    var limit = req.param('limit');
+    var sortField = req.param('sortField');
+    var sortDir = req.param('sortDir');
+    var page = req.param('page');
+
+    // Limit
+    if (limit) {
+      logs.limit(limit);
+
+      if (page > 1) {
+        console.log('skip', limit * page);
+        logs.skip(limit * (page - 1));
+      }
+    }
+
+
+
+    // Sorting
+    var sortInfo = {};
+    if (sortField && sortDir) {
+      sortInfo[sortField] = sortDir;
+    } else {
+      sortInfo.createdAt = 'desc';
+    }
+
+    // Sort logs
+    logs.sort(sortInfo);
+
+
+    logs.done(function(err, logs) {
+
+        // Data
+        response.data = logs;
+
+        // Counting rows
+        Log.count().done(function(err, count) {
+
+          response.totalCount = count;
+
+          // Response
+          res.json(response);
+        });
+
       });
 
   }

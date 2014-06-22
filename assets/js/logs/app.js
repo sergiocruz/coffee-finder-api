@@ -11,20 +11,22 @@ app.controller('MainCtrl', [
   '$scope',
   '$filter',
   'LogsResource',
-  'ngReactGrid',
-  function MainCtrl($scope, $filter, LogsResource, ngReactGrid) {
+  function MainCtrl($scope, $filter, LogsResource) {
 
     $scope.logs = [];
 
     function fetchLogsOnLoad(logs) {
-      $scope.logs = logs;
+
+      console.log(logs);
+
+      $scope.logs = logs.data;
 
       var formattedLogs = [];
-      angular.forEach(logs, function(log) {
+      angular.forEach(logs.data, function(log) {
 
         // Model
         var model = {};
-        model.date = $filter('date')(log.createdAt, 'medium');
+        model.createdAt = $filter('date')(log.createdAt, 'medium');
         model.lat  = $filter('toPrecision')(log.request.lat, 8);
         model.lon  = $filter('toPrecision')(log.request.lon, 8);
         model.size = (log.response.data[0].name.length + log.response.data[0].address.length + log.response.data[0].city.length + 2) + ' bytes';
@@ -37,14 +39,15 @@ app.controller('MainCtrl', [
 
       // Sets list of models to grid
       $scope.grid.data = formattedLogs;
+      $scope.grid.totalCount = logs.totalCount;
 
     }
 
     function fetchLogsError() {}
 
-    function fetchLogs() {
+    function fetchLogs(params) {
       LogsResource
-        .query()
+        .query(params)
           .$promise
             .then(fetchLogsOnLoad)
             .catch(fetchLogsError);
@@ -54,33 +57,50 @@ app.controller('MainCtrl', [
       data: [],
       columnDefs: [
         {
-          field: 'date',
+          field: 'createdAt',
           displayName: 'Date'
         },
         {
           field: 'lat',
-          displayName: 'Lat'
+          displayName: 'Lat',
+          sort: false
         },
         {
           field: 'lon',
-          displayName: 'Lon'
+          displayName: 'Lon',
+          sort: false
         },
         {
           field: 'size',
-          displayName: 'Size'
+          displayName: 'Size',
+          sort: false
         },
         {
           field: 'name',
-          displayName: 'Name'
+          displayName: 'Name',
+          sort: false
         },
         {
           field: 'addr',
-          displayName: 'Address'
+          displayName: 'Address',
+          sort: false
         }
       ],
       localMode: false,
       getData: function() {
-        fetchLogs();
+        
+        var grid = this;
+
+        console.log(grid);
+
+        var params = {
+          limit: grid.pageSize,
+          sortDir: grid.sortInfo.dir,
+          sortField: grid.sortInfo.field,
+          page: grid.currentPage || 1
+        };
+
+        fetchLogs(params);
       }
     };
 
@@ -92,7 +112,13 @@ app.provider('LogsResource', function LogsResource() {
     this.$get = ['$resource', function($resource) {
       var LogsResource = $resource(
         '/logs/api',
-        {}
+        {},
+
+        {
+          query: {
+            isArray: false
+          }
+        }
       );
 
       return LogsResource;
