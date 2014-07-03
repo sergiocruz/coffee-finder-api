@@ -52,9 +52,9 @@ var SearchController = {
       return sails.config[403]('Invalid input fields', req, res);
     }
 
-    var service = parseInt(Math.random() * 2, 10) ? FoursquareService : YelpService;
+    // var service = parseInt(Math.random() * 2, 10) ? FoursquareService : YelpService;
 
-    service.search(term, lat, lon, radius, limit)
+    YelpService.search(term, lat, lon, radius, limit)
       .then(function searchIndexResponse(response) {
 
 
