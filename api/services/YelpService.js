@@ -31,6 +31,7 @@ var YelpService = (function() {
 
     // Response object
     responseObject = V1Response.getResponse();
+    responseObject.source = 'yelp';
 
     for (i in yelpResponse.businesses) {
 

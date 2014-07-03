@@ -38,6 +38,7 @@ var V1Response = (function V1ResponseModule() {
    */
   module.getResponse = function getResponse() {
     return {
+      source: '',
       data: []
     };
   };

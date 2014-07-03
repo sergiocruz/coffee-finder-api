@@ -36,6 +36,7 @@ var SearchController = {
    
   index: function searchIndex(req, res) {
 
+    // TODO: Make CORS vars work globally
     res.set('Access-Control-Allow-Origin', '*');
     res.set('Connection', 'Keep-Alive');
     res.set('Keep-Alive', 'timeout=10, max=50');
@@ -51,7 +52,9 @@ var SearchController = {
       return sails.config[403]('Invalid input fields', req, res);
     }
 
-    YelpService.search(term, lat, lon, radius, limit)
+    var service = parseInt(Math.random() * 2, 10) ? FoursquareService : YelpService;
+
+    service.search(term, lat, lon, radius, limit)
       .then(function searchIndexResponse(response) {
 
 
@@ -62,7 +65,6 @@ var SearchController = {
             response: response
           })
           .done(function(err, data) {
-            // console.log('inserted!');
             res.json(response);
           });
 

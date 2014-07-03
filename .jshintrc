@@ -24,6 +24,7 @@
     "jQuery": false,
     "sails": false,
     "YelpService": false,
+    "FoursquareService": false,
     "V1Response": false,
     "Log": false,
     "User": false
