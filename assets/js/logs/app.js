@@ -7,11 +7,11 @@
 // */
 var app = angular.module('pebbleLogsApp', ['ngResource', 'ngReactGrid']);
 
-app.controller('MainCtrl', [
+app.controller('LogsCtrl', [
   '$scope',
   '$filter',
   'LogsResource',
-  function MainCtrl($scope, $filter, LogsResource) {
+  function LogsCtrl($scope, $filter, LogsResource) {
 
     $scope.logs = [];
 
@@ -29,9 +29,9 @@ app.controller('MainCtrl', [
         model.createdAt = $filter('date')(log.createdAt, 'medium');
         model.lat  = $filter('toPrecision')(log.request.lat, 8);
         model.lon  = $filter('toPrecision')(log.request.lon, 8);
-        model.size = (log.response.data[0].name.length + log.response.data[0].address.length + log.response.data[0].city.length + 2) + ' bytes';
         model.name = log.response.data[0].name;
         model.addr = log.response.data[0].address;
+        model.city = log.response.data[0].city + ', ' + log.response.data[0].state;
 
         // Model
         formattedLogs.push(model);
@@ -55,6 +55,7 @@ app.controller('MainCtrl', [
 
     $scope.grid = {
       data: [],
+      height: 1000,
       columnDefs: [
         {
           field: 'createdAt',
@@ -71,11 +72,6 @@ app.controller('MainCtrl', [
           sort: false
         },
         {
-          field: 'size',
-          displayName: 'Size',
-          sort: false
-        },
-        {
           field: 'name',
           displayName: 'Name',
           sort: false
@@ -84,7 +80,12 @@ app.controller('MainCtrl', [
           field: 'addr',
           displayName: 'Address',
           sort: false
-        }
+        },
+        {
+          field: 'city',
+          displayName: 'City',
+          sort: false
+        },
       ],
       localMode: false,
       getData: function() {
