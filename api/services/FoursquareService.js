@@ -5,7 +5,7 @@ var FoursquareService = (function() {
   // Dependencies
   var request = require('request');
   var qs = require('qs');
-  var Q = require('Q');
+  var Q = require('q');
 
   // Module to be exported
   var module = {};
