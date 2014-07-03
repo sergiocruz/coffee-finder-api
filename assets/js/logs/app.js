@@ -27,8 +27,8 @@ app.controller('LogsCtrl', [
         // Model
         var model = {};
         model.createdAt = $filter('date')(log.createdAt, 'medium');
-        model.lat  = $filter('toPrecision')(log.request.lat, 8);
-        model.lon  = $filter('toPrecision')(log.request.lon, 8);
+        model.lat  = $filter('toPrecision')(log.request.lat, 5);
+        model.lon  = $filter('toPrecision')(log.request.lon, 5);
         model.name = log.response.data[0].name;
         model.addr = log.response.data[0].address;
         model.city = log.response.data[0].city + ', ' + log.response.data[0].state;
