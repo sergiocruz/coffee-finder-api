@@ -48,30 +48,114 @@ var SearchController = {
         limit = req.query.limit || '';
 
     // Validating input
+    // TODO: Validate lat and lon are numerical
     if (!(term && lat && lon && radius)) {
       return sails.config[403]('Invalid input fields', req, res);
     }
 
-    // var service = parseInt(Math.random() * 2, 10) ? FoursquareService : YelpService;
+    // Formatting lat and lon
+    lat = parseFloat(lat).toPrecision(5);
+    lon = parseFloat(lon).toPrecision(5);
 
-    YelpService.search(term, lat, lon, radius, limit)
-      .then(function searchIndexResponse(response) {
+    // Tries to find venue from cache first
+    // TODO: Promisify this
+    Venue.find({
+      'lat': parseFloat(lat),
+      'lon': parseFloat(lon)
+    }).done(function(err, venues) {
 
+      // Finds directly from service
+      if (err || !venues.length) {
+        return buildFromService();
+      }
 
-        Log
-          .create({
-            uri: req.url,
-            request: req.query,
-            response: response
-          })
-          .done(function(err, data) {
-            res.json(response);
-          });
+      // Shoes response directly from cache
+      return buildFromCache(venues);
+    });
 
-      })
-      .catch(function(error) {
-        res.json(error);
+    /**
+     * Finds from venue from 3rd party service
+     */
+    function buildFromService() {
+
+      // var service = parseInt(Math.random() * 2, 10) ? FoursquareService : YelpService;
+
+      // Searches from service
+      // TODO: Promisify everything!
+      YelpService.search(term, lat, lon, radius, limit)
+        .then(function searchIndexResponse(response) {
+
+          Log
+            .create({
+              uri: req.url,
+              request: req.query,
+              response: response
+            })
+            .done(function(err, data) {
+
+              if (data.response.data.length) {
+                Venue.create({
+                  lat: lat,
+                  lon: lon,
+                  name: data.response.data[0].name,
+                  address: data.response.data[0].address,
+                  city: data.response.data[0].city,
+                  state: data.response.data[0].state,
+                  phone: data.response.data[0].phone,
+                  zip: data.response.data[0].zip
+                }).done(function(){
+                  buildJson(response);
+                });
+              } else {
+                buildJson(response);
+              }
+
+            });
+
+        })
+        .catch(function(error) {
+          buildJson(error);
+        });
+    }
+
+    /**
+     * Shows cached response
+     * @param  {Array} venues Array of venues
+     */
+    function buildFromCache(venues) {
+
+      // Formatting response
+      var response = V1Response.getResponse();
+      var BusinessModel = V1Response.getBusinessModel();
+
+      // Specifies where data is coming from
+      response.source = 'cache';
+
+      // Loops through venues and formats them accordantly
+      venues.forEach(function(eachVenue) {
+        // New BusinessModel instance
+        var model = new BusinessModel();
+        model.name    = eachVenue.name;
+        model.address = eachVenue.address;
+        model.city    = eachVenue.city;
+        model.state   = eachVenue.state;
+        model.phone   = eachVenue.phone;
+        model.zip     = eachVenue.postalCode;
+
+        // Pushes to response data
+        response.data.push(model);
       });
+
+      buildJson(response);
+    }
+
+    function buildJson(response) {
+
+      // Log analytical data
+
+      res.json(response);
+    }
+
 
   }
   

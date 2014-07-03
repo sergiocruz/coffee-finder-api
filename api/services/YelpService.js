@@ -93,8 +93,6 @@ var YelpService = (function() {
     deferred = Q.defer();
 
     // Formatting lat and long
-    lat = parseFloat(lat).toPrecision(6);
-    lon = parseFloat(lon).toPrecision(6);
     ll  = lat + ',' + lon;
 
     // URL Params

@@ -27,6 +27,7 @@
     "FoursquareService": false,
     "V1Response": false,
     "Log": false,
-    "User": false
+    "User": false,
+    "Venue": false
   }
 }
