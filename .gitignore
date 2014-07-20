@@ -43,5 +43,6 @@ nbproject
 # local config
 ########################
 config/local.js
+config/adapters.js
 www
 assets/bower_components
