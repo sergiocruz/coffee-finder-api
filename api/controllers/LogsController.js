@@ -39,7 +39,6 @@ var LogsController = {
       logs.limit(limit);
 
       if (page > 1) {
-        console.log('skip', limit * page);
         logs.skip(limit * (page - 1));
       }
     }

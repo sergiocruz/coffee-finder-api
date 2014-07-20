@@ -5,7 +5,27 @@
 // *
 // * Description
 // */
-var app = angular.module('pebbleLogsApp', ['ngResource', 'ngReactGrid']);
+var app = angular.module('pebbleLogsApp', ['ngRoute', 'ngResource', 'ngReactGrid']);
+
+app.config(['$routeProvider', function($routeProvider) {
+  $routeProvider
+    .when('/logs', {
+      controller: 'LogsCtrl',
+      templateUrl: '/views/logs.html'
+    })
+    .otherwise({
+      redirectTo: '/logs'
+    });
+}]);
+
+
+app.run(['$rootScope', function($rootScope) {
+  $rootScope.$on('$routeChangeSuccess', function(ev, data) {
+    if (data.$$route && data.$$route.controller) {
+      $rootScope.controller = data.$$route.controller;
+    }
+  });
+}]);
 
 app.controller('LogsCtrl', [
   '$scope',
@@ -25,13 +45,24 @@ app.controller('LogsCtrl', [
       angular.forEach(logs.data, function(log) {
 
         // Model
-        var model = {};
+        var model = {
+          createdAt: null,
+          lat: null,
+          lon: null,
+          name: null,
+          addr: null,
+          city: null
+        };
+
         model.createdAt = $filter('date')(log.createdAt, 'medium');
         model.lat  = $filter('toPrecision')(log.request.lat, 5);
         model.lon  = $filter('toPrecision')(log.request.lon, 5);
-        model.name = log.response.data[0].name;
-        model.addr = log.response.data[0].address;
-        model.city = log.response.data[0].city + ', ' + log.response.data[0].state;
+
+        if ('data' in log.response && log.response.data.length > 0) {
+          model.name = log.response.data[0].name;
+          model.addr = log.response.data[0].address;
+          model.city = log.response.data[0].city + ', ' + log.response.data[0].state;
+        }
 
         // Model
         formattedLogs.push(model);
@@ -108,6 +139,9 @@ app.controller('LogsCtrl', [
   }
 ]);
 
+app.controller('CachedCtrl', ['$scope', function CachedCtrl($scope) {
+  
+}]);
 
 app.provider('LogsResource', function LogsResource() {
     this.$get = ['$resource', function($resource) {

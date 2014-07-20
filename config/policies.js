@@ -22,6 +22,10 @@ module.exports.policies = {
     '*': 'isAuthenticated',
   },
 
+  SearchController: {
+    '*': 'analytics'
+  },
+
 
 
   /*

@@ -83,6 +83,11 @@ module.exports = {
       client_secret: ''
     }
 
+  },
+
+  // Google analytics ID
+  analytics: {
+    tid: 'UA-XXXXX-XX'
   }
 
 
